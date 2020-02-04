@@ -28,8 +28,8 @@ export default function FilterPlayground() {
       .get(`/sauti/?${value}`, {
         baseURL:
           process.env.NODE_ENV !== 'development'
-            ? 'https://sauti-marketprice-data.herokuapp.com/'
-            : 'https://sauti-marketprice-data.herokuapp.com/'
+            ? 'http://localhost:8888/'
+            : 'http://localhost:8888/'
       })
       .then(res => {
         setData(res.data)

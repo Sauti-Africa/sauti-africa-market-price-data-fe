@@ -32,8 +32,8 @@ export default function DrPlayground() {
       .get(`/sauti/client/playground/date?${value}`, {
         baseURL:
           process.env.NODE_ENV !== 'development'
-            ? 'https://sauti-marketprice-data.herokuapp.com/'
-            : 'https://sauti-marketprice-data.herokuapp.com/'
+            ? 'http://localhost:8888/'
+            : 'http://localhost:8888/'
       })
       .then(res => {
         setData(res.data)

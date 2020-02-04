@@ -85,7 +85,7 @@ export const Auth0Provider = ({
 
   // * GET AND SET USER ROLE IF AUTHENTICATED
   const getRole = () => axios
-    .post(`https://sauti-marketprice-data.herokuapp.com/api/users/`, user)
+    .post(`http://localhost:8888/api/users/`, user)
     .then(res => {
       console.log(`getRole: `, res)
       const user = res.data;
