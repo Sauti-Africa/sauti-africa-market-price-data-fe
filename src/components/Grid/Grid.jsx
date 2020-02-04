@@ -74,7 +74,7 @@ const Grid = ({ token }) => {
 
   // * QUERY TEMPLATE FOR UPDATING THE GRID DATA UPON SELECTED FILTERS
   const query = `/sauti/client/?currency=${currency || 'USD'}${countryQuery ||
-    ''}${marketQuery || ''}${pCatQuery || ''}${pAggQuery ||
+    ''}${marketQuery || ''}${sourceQuery || ''}${pCatQuery || ''}${pAggQuery ||
     ''}${productQuery || ''}${dateRangeQuery}&next=${manageLS('get', 'data') ? manageLS('get', 'data').next : ''}`
 
 
@@ -82,7 +82,7 @@ const Grid = ({ token }) => {
     console.log('TOKEN ' + token)
     const setInitialData = async () => {
       const query = `https://sauti-marketprice-data.herokuapp.com/sauti/client/?currency=${currency ||
-        'USD'}${countryQuery || ''}${marketQuery || ''}${pCatQuery ||
+        'USD'}${countryQuery || ''}${sourceQuery || ''}${marketQuery || ''}${pCatQuery ||
         ''}${pAggQuery || ''}${productQuery || ''}${dateRangeQuery}`
 
       return await axiosWithAuth([token]).get(query)
