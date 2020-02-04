@@ -26,7 +26,7 @@ const Content = ({ apiKey }) => {
           baseURL:
             process.env.NODE_ENV !== 'development'
               ? 'https://sauti-marketprice-data.herokuapp.com/'
-              : 'http://localhost:8888/'
+              : 'https://sauti-marketprice-data.herokuapp.com/'
         }
       )
       .then(res => {
