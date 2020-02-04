@@ -41,8 +41,7 @@ const Profile = ({ apiKey, setApiKey }) => {
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-          baseURL: 'http://localhost:8888/'
-          // baseURL: 'https://sauti-marketprice-data.herokuapp.com/'
+          baseURL: 'https://sauti-marketprice-data.herokuapp.com/'
         }
       )
       setApiKey(response.data.key)
