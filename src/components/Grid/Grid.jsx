@@ -79,19 +79,32 @@ const Grid = ({ token }) => {
 
 
   useEffect(() => {
-    console.log('TOKEN ' + token)
     const setInitialData = async () => {
       const query = `https://sauti-marketprice-data.herokuapp.com/sauti/client/?currency=${currency ||
         'USD'}${countryQuery || ''}${sourceQuery || ''}${marketQuery || ''}${pCatQuery ||
         ''}${pAggQuery || ''}${productQuery || ''}${dateRangeQuery}`
 
-      return await axiosWithAuth([token]).get(query)
+      // * ".pageCount" ONLY PERSIST ON THE FIRST PAGE OF THE API CALL USING KNEX-PAGINATE,
+      // * HERE WE PERSIST THROUGH STATE MANAGEMENT.
+      await axiosWithAuth([token]).get(query)
         .then(res => {
-          manageLS('set', 'page', res.data.next - 1)
-          manageLS('set', 'data', { ...res.data })
-          return setPageCount(res.data.pageCount)
+          setSpinner(true)
+          setPageCount(res.data.pageCount)
+          setSpinner(false)
         })
-        .then(res => console.log('PAGE COUNT', res))
+
+      // * IF A PREVIOUS QUERY "q" IN LOCALSTORAGE EXIST, RESTORE DATA.
+      if (manageLS('get', 'q')) {
+        return axiosWithAuth([token])
+          .get(manageLS('get', 'q') && manageLS('get', 'q'))
+          .then(res => {
+            setSpinner(true)
+            dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
+            manageLS('set', 'page', res.data.next - 1)
+            manageLS('set', 'data', { ...res.data })
+            setSpinner(false)
+          })
+      }
     }
 
     if (!!pageCount === false || isNaN(pageCount)) setInitialData()
@@ -425,7 +438,6 @@ const Grid = ({ token }) => {
     setErr(false)
 
     // * STORE DATA
-    manageLS('set', 'page', currentPage)
     manageLS('set', 'q', query)
 
     axiosWithAuth([token])
@@ -547,7 +559,7 @@ const Grid = ({ token }) => {
                   value={products}
                 />
                 <Dropdown
-                  class="currency"
+                  className="currency"
                   placeholder="Currency"
                   fluid
                   search
@@ -566,7 +578,7 @@ const Grid = ({ token }) => {
                   }}
                 />
               </Form>
-              <div class="grid-nav">
+              <div className="grid-nav">
                 <Button
                   onClick={() => {
                     apiCall()
@@ -645,11 +657,20 @@ const Grid = ({ token }) => {
                   }}>{`>`}</Button>
               )
           }
-          {
-            manageLS('get', 'page') < manageLS('get', 'data').pageCount
-            && <Button onClick={() => pageSkip('last')}>Last</Button>
+          { // * IF BOTH PAGE AND DATA KEY VALUES ARE TRUE, CONTINUE.
+            (manageLS('get', 'page') && manageLS('get', 'data'))
+            && // * IF PAGE VALUE IS LESS THAN OR EQUAL TO PAGECOUNT CONTINUE.
+            manageLS('get', 'page') <= pageCount
+            && // ? DISPLAY BUTTON BASED ON VALIDATION
+            <Button onClick={() => pageSkip('last')}>Last</Button>
           }
-          {currentPage && pageCount > 0 ? <span>{`${currentPage} of ${pageCount}`}</span> : null}
+          { // * IF BOTH PAGE AND DATA KEY VALUE EXIST, CONTINUE.
+            (manageLS('get', 'page') && manageLS('get', 'data'))
+              && // * IF PAGECOUNT EXIST AMD IS LESS THAN 0, DISPLAY VALUES.
+              pageCount && pageCount > 0
+              ? <span>{`${manageLS('get', 'page')} of ${pageCount}`}</span>
+              : null // ? ELSE NULL
+          }
         </div>
       </GridContext.Provider>
     </Container>
