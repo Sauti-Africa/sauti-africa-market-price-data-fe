@@ -89,9 +89,9 @@ const Grid = ({ token }) => {
         .then(res => {
           manageLS('set', 'page', res.data.next - 1)
           manageLS('set', 'data', { ...res.data })
-          return res.data.pageCount
+          return setPageCount(res.data.pageCount)
         })
-        .then(res => setPageCount(res))
+        .then(res => console.log('PAGE COUNT', res))
     }
 
     if (!!pageCount === false || isNaN(pageCount)) setInitialData()
@@ -373,6 +373,7 @@ const Grid = ({ token }) => {
           console.log(res.data.next - 1)
           manageLS('set', 'page', res.data.next - 1)
           manageLS('set', 'data', { ...res.data })
+          setPageCount(res.data.pageCount)
           console.log('UPDATE BUTTON CALL', manageLS('get', 'data'))
         }
       })
@@ -400,6 +401,41 @@ const Grid = ({ token }) => {
         dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
         setSpinner(false)
         setCurrentPage(res.data.next - 1)
+        manageLS('set', 'page', res.data.next - 1)
+        manageLS('set', 'data', { ...res.data })
+      })
+      .catch(e => {
+        setSpinner(false)
+        setErr(`${e.message}`)
+      })
+    setSpinner(false)
+  }
+
+  // * LAST / FIRST PAGE API CALL
+  const pageSkip = async (option) => {
+    const pageResult = option === 'last' && manageLS('get', 'data')
+      ? manageLS('get', 'data').pageCount
+      : option === 'first' && manageLS('get', 'data')
+        ? 1
+        : console.log('Not able to formulate a result for selected option by pageSkip().')
+
+    const query = `/sauti/client/?currency=${currency || 'USD'}${countryQuery ||
+      ''}${marketQuery || ''}${pCatQuery || ''}${sourceQuery || ''}${pAggQuery ||
+      ''}${productQuery || ''}${dateRangeQuery}&next=${pageResult}`
+    setErr(false)
+
+    // * STORE DATA
+    manageLS('set', 'page', currentPage)
+    manageLS('set', 'q', query)
+
+    axiosWithAuth([token])
+      .get(query)
+      .then(async res => {
+        if (res) console.log('PREVIOUS CALL', res)
+        dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
+        setSpinner(false)
+        setCurrentPage(res.data.next - 1)
+        manageLS('set', 'page', res.data.next - 1)
         manageLS('set', 'data', { ...res.data })
       })
       .catch(e => {
@@ -581,7 +617,7 @@ const Grid = ({ token }) => {
             </div>
           </LoadingOverlay>
 
-          {
+          { // * IF CURRENT PAGE IS 1 OR LESS THAN 1 RENDER A DISABLED PREV BTN OR ONE WITH FUNCTIONALITY.
             currentPage === 1 || currentPage < 1 ? (
               <Button disabled>{'<'}</Button>
             ) : (
@@ -592,20 +628,27 @@ const Grid = ({ token }) => {
                   }}>{'<'}</Button>
               )
           }
-          {manageLS('get', 'data') && manageLS('get', 'data').next - 1 < pageCount ? (
-            <Button
-              onClick={() => {
-                nextApiCall()
-                setSpinner('Getting data...')
-              }}>{`>`}</Button>
-          ) : (
+
+          { // * IF DATA EXIST AND A CURRENT EXIST LESS THAN THE TOTAL COUNT OF PAGES, RENDER THE FOLLOWING.
+            manageLS('get', 'data') && manageLS('get', 'data').next - 1 < pageCount ? (
               <Button
-                disabled
                 onClick={() => {
                   nextApiCall()
                   setSpinner('Getting data...')
                 }}>{`>`}</Button>
-            )}
+            ) : (
+                <Button
+                  disabled
+                  onClick={() => {
+                    nextApiCall()
+                    setSpinner('Getting data...')
+                  }}>{`>`}</Button>
+              )
+          }
+          {
+            manageLS('get', 'page') < manageLS('get', 'data').pageCount
+            && <Button onClick={() => pageSkip('last')}>Last</Button>
+          }
           {currentPage && pageCount > 0 ? <span>{`${currentPage} of ${pageCount}`}</span> : null}
         </div>
       </GridContext.Provider>
