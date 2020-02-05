@@ -45,7 +45,7 @@ const Grid = ({ token }) => {
   const [pCatQuery, setPCatQuery] = useState()
   const [pAggQuery, setPAggQuery] = useState()
   const [productQuery, setProductQuery] = useState()
-  const [currentPage, setCurrentPage] = useState()
+  const [currentPage, setCurrentPage] = useState(manageLS('get', 'page') || 0)
   const [pageCount, setPageCount] = useState(manageLS('get', 'page') ? manageLS('get', 'page').next - 1 : 0)
   const [countries, setCountries] = useState([])
   const [markets, setMarkets] = useState([])
@@ -74,20 +74,37 @@ const Grid = ({ token }) => {
 
   // * QUERY TEMPLATE FOR UPDATING THE GRID DATA UPON SELECTED FILTERS
   const query = `/sauti/client/?currency=${currency || 'USD'}${countryQuery ||
-    ''}${marketQuery || ''}${pCatQuery || ''}${pAggQuery ||
+    ''}${marketQuery || ''}${sourceQuery || ''}${pCatQuery || ''}${pAggQuery ||
     ''}${productQuery || ''}${dateRangeQuery}&next=${manageLS('get', 'data') ? manageLS('get', 'data').next : ''}`
 
 
   useEffect(() => {
-    console.log('TOKEN ' + token)
     const setInitialData = async () => {
       const query = `https://sauti-marketprice-data.herokuapp.com/sauti/client/?currency=${currency ||
-        'USD'}${countryQuery || ''}${marketQuery || ''}${pCatQuery ||
+        'USD'}${countryQuery || ''}${sourceQuery || ''}${marketQuery || ''}${pCatQuery ||
         ''}${pAggQuery || ''}${productQuery || ''}${dateRangeQuery}`
 
-      return await axiosWithAuth([token]).get(query)
-        .then(res => res.data.pageCount)
-        .then(res => setPageCount(res))
+      // * ".pageCount" ONLY PERSIST ON THE FIRST PAGE OF THE API CALL USING KNEX-PAGINATE,
+      // * HERE WE PERSIST THROUGH STATE MANAGEMENT.
+      await axiosWithAuth([token]).get(query)
+        .then(res => {
+          setSpinner(true)
+          setPageCount(res.data.pageCount)
+          setSpinner(false)
+        })
+
+      // * IF A PREVIOUS QUERY "q" IN LOCALSTORAGE EXIST, RESTORE DATA.
+      if (manageLS('get', 'q')) {
+        return axiosWithAuth([token])
+          .get(manageLS('get', 'q') && manageLS('get', 'q'))
+          .then(res => {
+            setSpinner(true)
+            dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
+            manageLS('set', 'page', res.data.next - 1)
+            manageLS('set', 'data', { ...res.data })
+            setSpinner(false)
+          })
+      }
     }
 
     if (!!pageCount === false || isNaN(pageCount)) setInitialData()
@@ -125,29 +142,29 @@ const Grid = ({ token }) => {
       text: country.country
     }))
     // Translate country abbreviations for dropdown 
-    countriesOptions.map((index)=>{
-      if(index.value === "BDI"){
+    countriesOptions.map((index) => {
+      if (index.value === "BDI") {
         index.text = "Burundi"
       }
-      if(index.value === 'DRC'){
+      if (index.value === 'DRC') {
         index.text = "Democratic Republic of the Congo"
       }
-      if(index.value === 'KEN'){
+      if (index.value === 'KEN') {
         index.text = "Kenya"
       }
-      if(index.value === 'MWI'){
+      if (index.value === 'MWI') {
         index.text = "Malawi"
       }
-      if(index.value === 'RWA'){
+      if (index.value === 'RWA') {
         index.text = "Rwanda"
       }
-      if(index.value === 'SSD'){
+      if (index.value === 'SSD') {
         index.text = "South Sudan"
       }
-      if(index.value === 'TZA'){
+      if (index.value === 'TZA') {
         index.text = "Tanzania"
       }
-      if(index.value === 'UGA'){
+      if (index.value === 'UGA') {
         index.text = "Uganda"
       }
     })
@@ -369,6 +386,7 @@ const Grid = ({ token }) => {
           console.log(res.data.next - 1)
           manageLS('set', 'page', res.data.next - 1)
           manageLS('set', 'data', { ...res.data })
+          setPageCount(res.data.pageCount)
           console.log('UPDATE BUTTON CALL', manageLS('get', 'data'))
         }
       })
@@ -385,11 +403,6 @@ const Grid = ({ token }) => {
       ''}${productQuery || ''}${dateRangeQuery}&next=${manageLS('get', 'data') ? manageLS('get', 'data').prev : ''}`
     setErr(false)
 
-    // checks that the previous page will not be less than 
-    setCurrentPage(
-      currentPage === 'number' && currentPage > 1 && manageLS('get', 'data').next - 1
-    )
-
     // * STORE DATA
     manageLS('set', 'page', currentPage)
     manageLS('set', 'q', query)
@@ -400,6 +413,41 @@ const Grid = ({ token }) => {
         if (res) console.log('PREVIOUS CALL', res)
         dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
         setSpinner(false)
+        setCurrentPage(res.data.next - 1)
+        manageLS('set', 'page', res.data.next - 1)
+        manageLS('set', 'data', { ...res.data })
+      })
+      .catch(e => {
+        setSpinner(false)
+        setErr(`${e.message}`)
+      })
+    setSpinner(false)
+  }
+
+  // * LAST / FIRST PAGE API CALL
+  const pageSkip = async (option) => {
+    const pageResult = option === 'last' && manageLS('get', 'data')
+      ? manageLS('get', 'data').pageCount
+      : option === 'first' && manageLS('get', 'data')
+        ? 1
+        : console.log('Not able to formulate a result for selected option by pageSkip().')
+
+    const query = `/sauti/client/?currency=${currency || 'USD'}${countryQuery ||
+      ''}${marketQuery || ''}${pCatQuery || ''}${sourceQuery || ''}${pAggQuery ||
+      ''}${productQuery || ''}${dateRangeQuery}&next=${pageResult}`
+    setErr(false)
+
+    // * STORE DATA
+    manageLS('set', 'q', query)
+
+    axiosWithAuth([token])
+      .get(query)
+      .then(async res => {
+        if (res) console.log('PREVIOUS CALL', res)
+        dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
+        setSpinner(false)
+        setCurrentPage(res.data.next - 1)
+        manageLS('set', 'page', res.data.next - 1)
         manageLS('set', 'data', { ...res.data })
       })
       .catch(e => {
@@ -511,7 +559,7 @@ const Grid = ({ token }) => {
                   value={products}
                 />
                 <Dropdown
-                  class="currency"
+                  className="currency"
                   placeholder="Currency"
                   fluid
                   search
@@ -530,7 +578,7 @@ const Grid = ({ token }) => {
                   }}
                 />
               </Form>
-              <div class="grid-nav">
+              <div className="grid-nav">
                 <Button
                   onClick={() => {
                     apiCall()
@@ -581,42 +629,48 @@ const Grid = ({ token }) => {
             </div>
           </LoadingOverlay>
 
-          {!currentPage ? (
-            <Button disabled>{'<'}</Button>
-          ) : currentPage === 2 ? (
-            <Button
-              onClick={() => {
-                apiCall()
-                setSpinner('Getting data...')
-              }}>
-              {'<'}
-            </Button>
-          ) : currentPage === 1 ? (
-            <Button disabled>{'<'}</Button>
-          ) : (
-                  <Button
-                    onClick={() => {
-                      prevApiCall()
-                      setSpinner('Getting data...')
-                    }}>
-                    {'<'}
-                  </Button>
-                )}
-          {manageLS('get', 'data').next && manageLS('get', 'data').next - 1 < pageCount ? (
-            <Button
-              onClick={() => {
-                nextApiCall()
-                setSpinner('Getting data...')
-              }}>{`>`}</Button>
-          ) : (
+          { // * IF CURRENT PAGE IS 1 OR LESS THAN 1 RENDER A DISABLED PREV BTN OR ONE WITH FUNCTIONALITY.
+            currentPage === 1 || currentPage < 1 ? (
+              <Button disabled>{'<'}</Button>
+            ) : (
+                <Button
+                  onClick={() => {
+                    prevApiCall()
+                    setSpinner('Getting data...')
+                  }}>{'<'}</Button>
+              )
+          }
+
+          { // * IF DATA EXIST AND A CURRENT EXIST LESS THAN THE TOTAL COUNT OF PAGES, RENDER THE FOLLOWING.
+            manageLS('get', 'data') && manageLS('get', 'data').next - 1 < pageCount ? (
               <Button
-                disabled
                 onClick={() => {
                   nextApiCall()
                   setSpinner('Getting data...')
                 }}>{`>`}</Button>
-            )}
-          {currentPage && pageCount > 0 ? <span>{`${manageLS('get', 'page')} of ${pageCount}`}</span> : null}
+            ) : (
+                <Button
+                  disabled
+                  onClick={() => {
+                    nextApiCall()
+                    setSpinner('Getting data...')
+                  }}>{`>`}</Button>
+              )
+          }
+          { // * IF BOTH PAGE AND DATA KEY VALUES ARE TRUE, CONTINUE.
+            (manageLS('get', 'page') && manageLS('get', 'data'))
+            && // * IF PAGE VALUE IS LESS THAN OR EQUAL TO PAGECOUNT CONTINUE.
+            manageLS('get', 'page') <= pageCount
+            && // ? DISPLAY BUTTON BASED ON VALIDATION
+            <Button onClick={() => pageSkip('last')}>Last</Button>
+          }
+          { // * IF BOTH PAGE AND DATA KEY VALUE EXIST, CONTINUE.
+            (manageLS('get', 'page') && manageLS('get', 'data'))
+              && // * IF PAGECOUNT EXIST AMD IS LESS THAN 0, DISPLAY VALUES.
+              pageCount && pageCount > 0
+              ? <span>{`${manageLS('get', 'page')} of ${pageCount}`}</span>
+              : null // ? ELSE NULL
+          }
         </div>
       </GridContext.Provider>
     </Container>
