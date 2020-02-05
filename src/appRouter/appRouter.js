@@ -4,7 +4,10 @@ import App from '../components/App'
 import { Auth0Provider } from '../hooks/useAuth0';
 import history from '../utils/history';
 
+
+
 const onRedirectCallback = appState => {
+    appState.targetUrl = "https://5e3affac27a6bd0007e27a3f--adoring-almeida-922cc4.netlify.com/"
     history.push(
         appState && appState.targetUrl
             ? appState.targetUrl
