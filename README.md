@@ -1,4 +1,4 @@
-//test to kill heroku.
+//Test, push failed
 # Sauti Africa Market Price Data & API
 
 You can find the deployed production site at [Sauti Africa Market Data](http://price-api.sautiafrica.org/).
