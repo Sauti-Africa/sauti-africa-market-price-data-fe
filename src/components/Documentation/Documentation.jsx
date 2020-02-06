@@ -25,6 +25,8 @@ import marketsGif from '../../assets/markets.gif'
 import productGif from '../../assets/product.gif'
 import dateRangeGif from '../../assets/date-range.gif'
 
+import { baseURL } from '../../urls'
+
 import 'highlight.js/styles/monokai-sublime.css'
 import './Documentation.scss'
 
@@ -133,7 +135,7 @@ const SideNav = () => {
             </h5>
             <Highlight language="javascript">
               {
-                'https://sauti-marketprice-data.herokuapp.com/sauti/developer'
+                `${baseURL}/sauti/developer`
               }
             </Highlight>
             <h5>Available Endpoints</h5>
@@ -141,14 +143,14 @@ const SideNav = () => {
             <h6>specific list - market, country, source, product</h6>
             <Highlight language="javascript">
               {
-                'https://sauti-marketprice-data.herokuapp.com/sauti/developer/lists/'
+                `${baseURL}/sauti/developer/lists/`
               }
             </Highlight>
 
             <h6>filter</h6>
             <Highlight language="javascript">
               {
-                'https://sauti-marketprice-data.herokuapp.com/sauti/developer/filter/'
+                `${baseURL}/sauti/developer/filter/`
               }
             </Highlight>
 
@@ -157,7 +159,7 @@ const SideNav = () => {
             </h6>
             <Highlight language="javascript">
               {
-                'https://sauti-marketprice-data.herokuapp.com/sauti/developer/product/latestprice/'
+                `${baseURL}/sauti/developer/product/latestprice/`
               }
             </Highlight>
 
@@ -167,7 +169,7 @@ const SideNav = () => {
             </h6>
             <Highlight language="javascript">
               {
-                'https://sauti-marketprice-data.herokuapp.com/sauti/developer/product/pricebymarket/'
+                `${baseURL}/sauti/developer/product/pricebymarket/`
               }
             </Highlight>
 
@@ -177,7 +179,7 @@ const SideNav = () => {
             </h6>
             <Highlight language="javascript">
               {
-                'https://sauti-marketprice-data.herokuapp.com/sauti/developer/product/range/'
+                `${baseURL}/sauti/developer/product/range/`
               }
             </Highlight>
           </article>
@@ -204,7 +206,7 @@ const SideNav = () => {
               />
             </p>
             <Highlight language="javascript" className="highlight">
-              {'https://sauti-marketprice-data.herokuapp.com/sauti/'}
+              {`${baseURL}/sauti/`}
               <br />
               {'developer/lists/?list=[MARKET][COUNTRY][SOURCE][PRODUCT]'}
             </Highlight>
@@ -266,7 +268,7 @@ const SideNav = () => {
               />
             </p>
             <Highlight language="javascript">
-              {'https://sauti-marketprice-data.herokuapp.com/sauti/'}
+              {`${baseURL}/sauti/`}
               <br />
               {
                 'developer/filter/?p=[PRODUCT]&market=[MARKET]&pcat=[PRODUCT CATEGORY]'
@@ -348,7 +350,7 @@ const SideNav = () => {
               Returns all records on given product. Pass the query /?product=
             </p>
             <Highlight language="javascript">
-              {'https://sauti-marketprice-data.herokuapp.com/sauti/'}
+              {`${baseURL}/sauti/`}
               <br />
               {'developer/product/latestprice/?product=[PRODUCT]'}
             </Highlight>
@@ -395,7 +397,7 @@ const SideNav = () => {
               />
             </p>
             <Highlight language="javascript">
-              {'https://sauti-marketprice-data.herokuapp.com/sauti/'}
+              {`${baseURL}/sauti/`}
               <br />
               {
                 'developer/product/pricebymarket/?market=[MARKET]&product=[PRODUCT]'
@@ -463,7 +465,7 @@ const SideNav = () => {
               />
             </p>
             <Highlight language="javascript">
-              {'https://sauti-marketprice-data.herokuapp.com/sauti/'}
+              {`${baseURL}/sauti/`}
               <br />
               {
                 'developer/product/range/?product=[PRODUCT]&startDate=[START DATE]&endDate=[END DATE]&count=[COUNT]&next=[NEXT]'

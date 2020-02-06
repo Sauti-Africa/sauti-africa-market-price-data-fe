@@ -3,6 +3,9 @@ import axios from 'axios'
 import Highlight from 'react-highlight'
 import { Button, Input, Label } from 'semantic-ui-react'
 import 'highlight.js/styles/monokai-sublime.css'
+
+import { baseURL } from '../../urls'
+
 export default function FilterPlayground() {
   const [userAnswer, setUserAnswer] = useState({ url: '' })
   const [data, setData] = useState([])
@@ -26,10 +29,7 @@ export default function FilterPlayground() {
   function makeCall(value) {
     axios
       .get(`/sauti/?${value}`, {
-        baseURL:
-          process.env.NODE_ENV !== 'development'
-            ? 'https://sauti-marketprice-data.herokuapp.com/'
-            : 'https://sauti-marketprice-data.herokuapp.com/'
+        baseURL: baseURL
       })
       .then(res => {
         setData(res.data)

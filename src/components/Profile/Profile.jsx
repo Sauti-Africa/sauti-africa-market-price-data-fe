@@ -6,6 +6,7 @@ import { Header, Card, Image, Message, Icon } from 'semantic-ui-react'
 
 import Loading from '../Loading/Loading'
 import { useAuth0 } from '../../contexts'
+import { baseURL } from '../../urls'
 
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
@@ -44,7 +45,7 @@ const Profile = ({ apiKey, setApiKey }) => {
             Authorization: `Bearer ${token}`,
             Origin: 'https://jolly-panini-1f3c1c.netlify.com/profile'
           },
-          baseURL: 'https://sauti-marketprice-data.herokuapp.com/'
+          baseURL: baseURL
         }
       )
       setApiKey(response.data.key)

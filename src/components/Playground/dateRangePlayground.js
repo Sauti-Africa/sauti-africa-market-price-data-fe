@@ -4,6 +4,9 @@ import Highlight from 'react-highlight'
 import './Playground.scss'
 import { Button, Input, Label } from 'semantic-ui-react'
 import 'highlight.js/styles/monokai-sublime.css'
+
+import { baseURL } from '../../urls'
+
 export default function DrPlayground() {
   const [userAnswer, setUserAnswer] = useState({
     url: 'product=yellow%20beans&startDate=2019-01-01&endDate=2019-10-28'
@@ -30,10 +33,7 @@ export default function DrPlayground() {
   function makeCall(value) {
     axios
       .get(`/sauti/client/playground/date?${value}`, {
-        baseURL:
-          process.env.NODE_ENV !== 'development'
-            ? 'https://sauti-marketprice-data.herokuapp.com/'
-            : 'https://sauti-marketprice-data.herokuapp.com/'
+        baseURL: baseURL
       })
       .then(res => {
         setData(res.data)

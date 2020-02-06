@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import createAuth0Client from '@auth0/auth0-spa-js'
 import { Auth0Context } from '../contexts'
+import { baseURL } from '../urls'
 import axios from 'axios'
 
 // const DEFAULT_REDIRECT_CALLBACK = () =>
@@ -85,7 +86,7 @@ export const Auth0Provider = ({
 
   // * GET AND SET USER ROLE IF AUTHENTICATED
   const getRole = async () => axios
-    .post(`https://sauti-marketprice-data.herokuapp.com/api/users/`, user)
+    .post(`${baseURL}/api/users/`, user)
     .then(res => {
       console.log(`getRole: `, res)
       const user = res.data;

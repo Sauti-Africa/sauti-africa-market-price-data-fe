@@ -4,6 +4,8 @@ import Highlight from 'react-highlight'
 import { Button, Input, Label } from 'semantic-ui-react'
 import 'highlight.js/styles/monokai-sublime.css'
 
+import { baseURL } from '../../urls'
+
 export default function PmPlayground() {
   const [userAnswer, setUserAnswer] = useState({
     url: 'product=yellow%20beans&market=lira'
@@ -29,10 +31,7 @@ export default function PmPlayground() {
   function makeCall(value) {
     axios
       .get(`/sauti/client/playground/latest?${value}`, {
-        baseURL:
-          process.env.NODE_ENV !== 'development'
-            ? 'https://sauti-marketprice-data.herokuapp.com/'
-            : 'https://sauti-marketprice-data.herokuapp.com/'
+        baseURL: baseURL
       })
       .then(res => {
         setData(res.data)

@@ -5,6 +5,7 @@ import queryString from 'query-string'
 
 import { GridContext } from '../../contexts'
 import { initialState, reducer } from '../../store'
+import { baseURL } from '../../urls'
 
 import { Container } from 'reactstrap'
 import { Dropdown, Button, Form, Message } from 'semantic-ui-react'
@@ -80,7 +81,7 @@ const Grid = ({ token }) => {
 
   useEffect(() => {
     const setInitialData = async () => {
-      const query = `https://sauti-marketprice-data.herokuapp.com/sauti/client/?currency=${currency ||
+      const query = `${baseURL}/sauti/client/?currency=${currency ||
         'USD'}${countryQuery || ''}${sourceQuery || ''}${marketQuery || ''}${pCatQuery ||
         ''}${pAggQuery || ''}${productQuery || ''}${dateRangeQuery}`
 
@@ -364,7 +365,7 @@ const Grid = ({ token }) => {
 
   // * API CALL
   const apiCall = async () => {
-    const query = `https://sauti-marketprice-data.herokuapp.com/sauti/client/?currency=${currency ||
+    const query = `${baseURL}/sauti/client/?currency=${currency ||
       'USD'}${countryQuery || ''}${sourceQuery || ''}${marketQuery || ''}${pCatQuery ||
       ''}${pAggQuery || ''}${productQuery || ''}${dateRangeQuery}`
 
@@ -460,7 +461,7 @@ const Grid = ({ token }) => {
   // * CSV CALL TO EXPORT CSV
   const apiCallForCSV = async () => {
     setErr(false)
-    const query = `https://sauti-marketprice-data.herokuapp.com/sauti/client/export/?currency=${currency ||
+    const query = `${baseURL}/sauti/client/export/?currency=${currency ||
       'USD'}${countryQuery || ''}${sourceQuery || ''}${marketQuery || ''}${pCatQuery ||
       ''}${pAggQuery || ''}${productQuery || ''}${dateRangeQuery}`
     axiosWithAuth([token], NOCACHE)
