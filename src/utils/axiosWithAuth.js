@@ -53,6 +53,7 @@ export const axiosWithAuth = (token, exclude) => {
         const response = await axios.get(path, {
           ...params,
           headers: { Authorization: `Bearer ${token}` },
+          // withCredentials: true,
           baseURL:
             process.env.NODE_ENV !== 'development'
               ? 'https://sauti-marketprice-data.herokuapp.com/'

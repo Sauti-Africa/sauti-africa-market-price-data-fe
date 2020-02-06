@@ -26,24 +26,21 @@ const Profile = ({ apiKey, setApiKey }) => {
       </Message.Content>
     </Message>
   )
-    
+
   const getApiKey = async () => {
     try {
       setKeyLoading(true)
       const token = await getTokenSilently()
 
       const { sub } = user
-      
+
       const response = await axios.post(
         '/api/apikeyRoute/private',
         {
           id: sub
         },
         {
-          headers: { 
-            Authorization: `Bearer ${token}`,
-            Origin: 'https://jolly-panini-1f3c1c.netlify.com/profile'
-          },
+          headers: { Authorization: `Bearer ${token}` },
           baseURL: 'https://sauti-marketprice-data.herokuapp.com/'
         }
       )
@@ -64,7 +61,7 @@ const Profile = ({ apiKey, setApiKey }) => {
         <Icon name="users" circular />
         <Header.Content>{`Welcome,  ${
           user.given_name ? user.given_name : 'user'
-        }!`}</Header.Content>
+          }!`}</Header.Content>
       </Header>
       <Row className="align-items-center profile-header mb-5 text-center text-md-center">
         <Card>
@@ -107,8 +104,8 @@ const Profile = ({ apiKey, setApiKey }) => {
                   <Button>Copy to Clipboard</Button>
                 </CopyToClipboard>
               ) : (
-                <Message success>Copied!</Message>
-              )}
+                  <Message success>Copied!</Message>
+                )}
             </>
           ) : null}
           {!apiKey && !keyLoading ? (
