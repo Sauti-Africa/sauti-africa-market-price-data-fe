@@ -663,7 +663,7 @@ const Grid = ({ token }) => {
             && // * IF PAGE VALUE IS LESS THAN OR EQUAL TO PAGECOUNT CONTINUE.
             manageLS('get', 'page') <= pageCount
             && // ? DISPLAY BUTTON BASED ON VALIDATION
-            <Button onClick={() => pageSkip('last')}>Last</Button>
+            <Button onClick={() => pageSkip('last')}>Last Page</Button>
           }
           { // * IF BOTH PAGE AND DATA KEY VALUE EXIST, CONTINUE.
             (manageLS('get', 'page') && manageLS('get', 'data'))
