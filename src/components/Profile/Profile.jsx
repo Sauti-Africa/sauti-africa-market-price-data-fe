@@ -40,7 +40,10 @@ const Profile = ({ apiKey, setApiKey }) => {
           id: sub
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            Origin: 'https://jolly-panini-1f3c1c.netlify.com/profile'
+          },
           baseURL: 'https://sauti-marketprice-data.herokuapp.com/'
         }
       )
