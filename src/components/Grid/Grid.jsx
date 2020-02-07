@@ -79,32 +79,11 @@ const Grid = ({ token }) => {
 
 
   useEffect(() => {
+    console.log('CURRENT PAGE NUMBER', currentPage)
     const setInitialData = async () => {
       const query = `https://sauti-marketprice-data.herokuapp.com/sauti/client/?currency=${currency ||
         'USD'}${countryQuery || ''}${sourceQuery || ''}${marketQuery || ''}${pCatQuery ||
         ''}${pAggQuery || ''}${productQuery || ''}${dateRangeQuery}`
-
-      // * ".pageCount" ONLY PERSIST ON THE FIRST PAGE OF THE API CALL USING KNEX-PAGINATE,
-      // * HERE WE PERSIST THROUGH STATE MANAGEMENT.
-      await axiosWithAuth([token]).get(query)
-        .then(res => {
-          setSpinner(true)
-          setPageCount(res.data.pageCount)
-          setSpinner(false)
-        })
-
-      // * IF A PREVIOUS QUERY "q" IN LOCALSTORAGE EXIST, RESTORE DATA.
-      if (manageLS('get', 'q')) {
-        return axiosWithAuth([token])
-          .get(manageLS('get', 'q') && manageLS('get', 'q'))
-          .then(res => {
-            setSpinner(true)
-            dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
-            manageLS('set', 'page', res.data.next - 1)
-            manageLS('set', 'data', { ...res.data })
-            setSpinner(false)
-          })
-      }
     }
 
     if (!!pageCount === false || isNaN(pageCount)) setInitialData()
@@ -351,6 +330,7 @@ const Grid = ({ token }) => {
 
         // * STORE DATA IN LOCALSTORAGE IF RESULTS EXISTS
         if (res) {
+          setCurrentPage(res.data.next - 1)
           manageLS('set', 'page', res.data.next - 1)
           manageLS('set', 'data', { ...res.data })
           console.log('NEXT BUTTON CALL', manageLS('get', 'data'))
@@ -404,13 +384,11 @@ const Grid = ({ token }) => {
     setErr(false)
 
     // * STORE DATA
-    manageLS('set', 'page', currentPage)
     manageLS('set', 'q', query)
 
     axiosWithAuth([token])
       .get(query)
       .then(async res => {
-        if (res) console.log('PREVIOUS CALL', res)
         dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
         setSpinner(false)
         setCurrentPage(res.data.next - 1)
@@ -426,8 +404,8 @@ const Grid = ({ token }) => {
 
   // * LAST / FIRST PAGE API CALL
   const pageSkip = async (option) => {
-    const pageResult = option === 'last' && manageLS('get', 'data')
-      ? manageLS('get', 'data').pageCount
+    const pageResult = option === 'last' && (manageLS('get', 'data') && pageCount)
+      ? pageCount
       : option === 'first' && manageLS('get', 'data')
         ? 1
         : console.log('Not able to formulate a result for selected option by pageSkip().')
@@ -668,7 +646,7 @@ const Grid = ({ token }) => {
             (manageLS('get', 'page') && manageLS('get', 'data'))
               && // * IF PAGECOUNT EXIST AMD IS LESS THAN 0, DISPLAY VALUES.
               pageCount && pageCount > 0
-              ? <span>{`${manageLS('get', 'page')} of ${pageCount}`}</span>
+              ? <span>{`${currentPage} of ${pageCount}`}</span>
               : null // ? ELSE NULL
           }
         </div>
