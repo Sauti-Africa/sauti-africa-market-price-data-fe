@@ -1,16 +1,13 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { Button, Container, Row, Col } from 'reactstrap'
-
 import { Header, Card, Image, Message, Icon } from 'semantic-ui-react'
-
-import Loading from '../Loading/Loading'
-import { useAuth0 } from '../../contexts'
-
+import Loading from '../Loading/Loading' //
+import { useAuth0 } from '../../contexts' //
 import { CopyToClipboard } from 'react-copy-to-clipboard'
-
 import Highlight from 'react-highlight'
 import 'highlight.js/styles/monokai-sublime.css'
+export const settingRole = (user, role) => ({...user, role})
 
 const Profile = ({ apiKey, setApiKey }) => {
   const { loading, user, getTokenSilently } = useAuth0()

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import createAuth0Client from '@auth0/auth0-spa-js'
 import { Auth0Context } from '../contexts'
 import axios from 'axios'
+import { settingRole } from '../components/Profile/Profile'
 
 // const DEFAULT_REDIRECT_CALLBACK = () =>
 //   window.history.replaceState({}, document.title, window.location.pathname)
@@ -39,8 +40,7 @@ export const Auth0Provider = ({
           appState: { targetUrl: window.location.pathname }
         })
         const user = await auth0FromHook.getUser()
-
-        setUser(user)
+        setUser(settingRole(user, 'paidUser'))
       }
       // * VALIDATE IF USER IS AUTHENTICATED.
       setIsAuthenticated(isAuthenticated)
@@ -50,7 +50,7 @@ export const Auth0Provider = ({
       if (isAuthenticated) {
         const user = await auth0FromHook.getUser()
 
-        setUser(user)
+        setUser(settingRole(user, 'paidUser'))
       }
 
       setLoading(false)
