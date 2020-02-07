@@ -321,20 +321,19 @@ const Grid = ({ token }) => {
     axiosWithAuth([token])
       .get(query)
       .then(async res => {
-        console.log(res)
-        if (res.error) throw new Error(res.error)
-        dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
-        setSpinner(false)
-
-        await setCurrentPage(res.data.next - 1)
-
         // * STORE DATA IN LOCALSTORAGE IF RESULTS EXISTS
         if (res) {
-          setCurrentPage(res.data.next - 1)
+          await setCurrentPage(res.data.next - 1)
+          await dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
+
           manageLS('set', 'page', res.data.next - 1)
           manageLS('set', 'data', { ...res.data })
-          console.log('NEXT BUTTON CALL', manageLS('get', 'data'))
         }
+
+        // ! IF ERROR
+        if (res.error) throw new Error(res.error)
+        // ! REMOVE LOADING ANIMATION
+        return setSpinner(false)
       })
       .catch(e => {
         setErr(`${e.message}`)
@@ -344,7 +343,10 @@ const Grid = ({ token }) => {
 
   // * API CALL
   const apiCall = async () => {
-    const query = `https://sauti-marketprice-data.herokuapp.com/sauti/client/?currency=${currency ||
+    // const query = `https://sauti-marketprice-data.herokuapp.com/sauti/client/?currency=${currency ||
+    //   'USD'}${countryQuery || ''}${sourceQuery || ''}${marketQuery || ''}${pCatQuery ||
+    //   ''}${pAggQuery || ''}${productQuery || ''}${dateRangeQuery}`
+    const query = `http://localhost:8888/sauti/client/?currency=${currency ||
       'USD'}${countryQuery || ''}${sourceQuery || ''}${marketQuery || ''}${pCatQuery ||
       ''}${pAggQuery || ''}${productQuery || ''}${dateRangeQuery}`
 
@@ -356,18 +358,16 @@ const Grid = ({ token }) => {
     axiosWithAuth([token])
       .get(query)
       .then(async res => {
-        if (res) console.log(res)
-        if (res.error) throw new Error(res.error)
-        dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
-        setSpinner(false)
 
         // Stored in local storage to later restore parameters if user reloads page
         if (res) {
-          console.log(res.data.next - 1)
+          await setPageCount(res.data.pageCount)
+          await setCurrentPage(res.data.next - 1)
+          await dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
+
           manageLS('set', 'page', res.data.next - 1)
           manageLS('set', 'data', { ...res.data })
-          setPageCount(res.data.pageCount)
-          console.log('UPDATE BUTTON CALL', manageLS('get', 'data'))
+          setSpinner(false)
         }
       })
       .catch(e => {
@@ -389,11 +389,17 @@ const Grid = ({ token }) => {
     axiosWithAuth([token])
       .get(query)
       .then(async res => {
-        dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
-        setSpinner(false)
-        setCurrentPage(res.data.next - 1)
+        // * SET DATA FOR BOTH STATE && LOCALSTORAGE
+        await setCurrentPage(res.data.next - 1)
+        await dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
+
         manageLS('set', 'page', res.data.next - 1)
         manageLS('set', 'data', { ...res.data })
+
+        // ! IF ERROR
+        if (res.error) throw new Error(res.error)
+        // ! REMOVE LOADING ANIMATION
+        return setSpinner(false)
       })
       .catch(e => {
         setSpinner(false)
@@ -421,12 +427,17 @@ const Grid = ({ token }) => {
     axiosWithAuth([token])
       .get(query)
       .then(async res => {
-        if (res) console.log('PREVIOUS CALL', res)
-        dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
-        setSpinner(false)
-        setCurrentPage(res.data.next - 1)
+        // * SET DATA FOR BOTH STATE && LOCALSTORAGE
+        await setCurrentPage(res.data.next - 1)
+        await dispatch({ type: 'SET_ROW_DATA', payload: res.data.records })
+
         manageLS('set', 'page', res.data.next - 1)
         manageLS('set', 'data', { ...res.data })
+
+        // ! IF ERROR
+        if (res.error) throw new Error(res.error)
+        // ! REMOVE LOADING ANIMATION
+        return setSpinner(false)
       })
       .catch(e => {
         setSpinner(false)
