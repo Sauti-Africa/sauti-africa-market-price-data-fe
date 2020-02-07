@@ -25,7 +25,8 @@ const AppRouter = () => {
                 <Auth0Provider
                     history={history}
                     domain={process.env.REACT_APP_DOMAIN}
-                    client_id={process.env.REACT_APP_CLIENT_ID}
+                    // client_id={process.env.REACT_APP_CLIENT_ID}
+                    client_id="bxosYDeCRsMMIEuRFyte2kxifC5uK9ua"
                     redirect_uri={window.location.origin}
                     onRedirectCallback={onRedirectCallback}
                     audience={process.env.REACT_APP_AUDIENCE}

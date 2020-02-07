@@ -7,7 +7,7 @@ import { useAuth0 } from '../../contexts' //
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import Highlight from 'react-highlight'
 import 'highlight.js/styles/monokai-sublime.css'
-export const settingRole = (user, role) => ({...user, role})
+
 
 const Profile = ({ apiKey, setApiKey }) => {
   const { loading, user, getTokenSilently } = useAuth0()
@@ -28,13 +28,15 @@ const Profile = ({ apiKey, setApiKey }) => {
     try {
       setKeyLoading(true)
       const token = await getTokenSilently()
+      console.log(`token `, token)
 
       const { sub } = user
 
       const response = await axios.post(
         '/api/apikeyRoute/private',
         {
-          id: sub
+          id: sub,
+          role: `freeUser`
         },
         {
           headers: { Authorization: `Bearer ${token}` },

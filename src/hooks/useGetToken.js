@@ -12,6 +12,7 @@ function useGetToken() {
     const fetchToken = async () => {
       try {
         const result = await getTokenSilently()
+        console.log(`useGetToken `,result)
         setToken(result)
         setLoading(false)
       } catch (error) {
