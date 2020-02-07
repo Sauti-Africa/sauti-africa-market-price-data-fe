@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import createAuth0Client from '@auth0/auth0-spa-js'
 import { Auth0Context } from '../contexts'
-import axios from 'axios'
 import { settingRole } from '../components/Profile/Profile'
-
-// const DEFAULT_REDIRECT_CALLBACK = () =>
-//   window.history.replaceState({}, document.title, window.location.pathname)
 
 // Primarily from auth0 SPA quick start: https://auth0.com/docs/quickstart/spa
 export const Auth0Provider = ({
@@ -45,7 +41,7 @@ export const Auth0Provider = ({
       // * VALIDATE IF USER IS AUTHENTICATED.
       setIsAuthenticated(isAuthenticated)
 
-      if (!isAuthenticated) validateAuthentication()
+      if (!isAuthenticated && !!user !== true) validateAuthentication()
 
       if (isAuthenticated) {
         const user = await auth0FromHook.getUser()
@@ -82,23 +78,6 @@ export const Auth0Provider = ({
     setIsAuthenticated(true)
     setUser(user)
   }
-
-  // * GET AND SET USER ROLE IF AUTHENTICATED
-  const getRole = async () => axios
-    .post(`https://sauti-marketprice-data.herokuapp.com/api/users/`, user)
-    .then(res => {
-      console.log(`getRole: `, res)
-      const user = res.data;
-
-      if(role === undefined || role === null){
-        return setRole({ ...user.app_metadata })
-      }
-      
-      // return !!user === true && setRole({ ...user.app_metadata })
-    })
-    .catch(err => console.log(err))
-
-  if (loading === false && !!user === true && isAuthenticated) getRole()
 
   // * REDIRECT BASED ON ROLE STATUS
   if (role && !!role.role === false && window.location.pathname !== '/plan') {
