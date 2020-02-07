@@ -2,38 +2,32 @@ import React from 'react'
 import { useAuth0 } from '../../contexts'
 import axios from 'axios'
 import './UserRoles.scss'
+import { settingRole } from '../../hooks/useAuth0'
 
 const UserRoles = () => {
   const { user } = useAuth0()
 
-  const updateUserRole = (userId, user) => {
-    axios
-      .put(`https://sauti-marketprice-data.herokuapp.com/api/users/${userId}`, user)
-      .then(res => {
-        console.log(`test`)
-        return res
-      })
-      .catch(err => console.log(err))
-  }
 
   function handlePaidUser(e) {
     e.preventDefault()
-    const paidUser = {
-      app_metadata: {
-        role: 'paidUser'
-      }
+    const role = 'paidUser'
+    if (user.app_metadata === 'paidUser'){
+      window.location.assign('/profile')
+    } else {
+      settingRole(user, role)
+    window.location.assign('/profile')
     }
-    updateUserRole(user.sub, paidUser)
   }
 
   function handleFreeUser(e) {
     e.preventDefault()
-    const freeUser = {
-      app_metadata: {
-        role: 'freeUser'
-      }
+    const role = 'freeUser'
+    if (user.app_metadata === 'freeUser'){
+      window.location.assign('/profile')
+    } else {
+      settingRole(user, role)
+    window.location.assign('/profile')
     }
-    updateUserRole(user.sub, freeUser)
   }
 
   return (

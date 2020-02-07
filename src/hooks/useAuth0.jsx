@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import createAuth0Client from '@auth0/auth0-spa-js'
 import { Auth0Context } from '../contexts'
-import { settingRole } from '../components/Profile/Profile'
-
+export const settingRole = (user, role) => ({...user, app_metadata: role})
 // Primarily from auth0 SPA quick start: https://auth0.com/docs/quickstart/spa
 export const Auth0Provider = ({
   children,
@@ -36,7 +35,8 @@ export const Auth0Provider = ({
           appState: { targetUrl: window.location.pathname }
         })
         const user = await auth0FromHook.getUser()
-        setUser(settingRole(user, 'paidUser'))
+        setUser( await settingRole(user, 'paidUser'))
+        console.log(`userAuth0 validateAuth`, await user)
       }
       // * VALIDATE IF USER IS AUTHENTICATED.
       setIsAuthenticated(isAuthenticated)
@@ -46,7 +46,8 @@ export const Auth0Provider = ({
       if (isAuthenticated) {
         const user = await auth0FromHook.getUser()
 
-        setUser(settingRole(user, 'paidUser'))
+        setUser(await settingRole(user, 'paidUser'))
+        console.log(`userAuth0`, await user)
       }
 
       setLoading(false)
@@ -80,9 +81,10 @@ export const Auth0Provider = ({
   }
 
   // * REDIRECT BASED ON ROLE STATUS
-  if (role && !!role.role === false && window.location.pathname !== '/plan') {
+
+  if (!!user === true && !!user.app_metadata === false  && window.location.pathname !== '/plan') {
     window.location.assign('plan')
-  } else if (role === true && window.location.pathname !== '/') {
+  } else if (!!user === true && user.app_metadata === true && window.location.pathname !== '/') {
     window.location.assign('/')
   }
 
