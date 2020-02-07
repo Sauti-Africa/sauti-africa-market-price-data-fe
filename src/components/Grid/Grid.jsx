@@ -343,10 +343,7 @@ const Grid = ({ token }) => {
 
   // * API CALL
   const apiCall = async () => {
-    // const query = `https://sauti-marketprice-data.herokuapp.com/sauti/client/?currency=${currency ||
-    //   'USD'}${countryQuery || ''}${sourceQuery || ''}${marketQuery || ''}${pCatQuery ||
-    //   ''}${pAggQuery || ''}${productQuery || ''}${dateRangeQuery}`
-    const query = `http://localhost:8888/sauti/client/?currency=${currency ||
+    const query = `https://sauti-marketprice-data.herokuapp.com/sauti/client/?currency=${currency ||
       'USD'}${countryQuery || ''}${sourceQuery || ''}${marketQuery || ''}${pCatQuery ||
       ''}${pAggQuery || ''}${productQuery || ''}${dateRangeQuery}`
 
