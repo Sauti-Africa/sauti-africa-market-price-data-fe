@@ -1,7 +1,7 @@
 //Test, push failed
 # Sauti Africa Market Price Data & API
 
-You can find the deployed production site at [Sauti Africa Market Data](http://price-api.sautiafrica.org/).
+You can find the deployed production site at [Sauti Africa Market Data](http://www.sautimarketpricedata.live/).
 
 [Staging deployment](https://jolly-panini-1f3c1c.netlify.com/)
 
